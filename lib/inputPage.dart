@@ -1,5 +1,6 @@
-import 'package:crud_sqlite_provider/controller/task_controller.dart';
+import 'package:crud_sqlite_provider/controller/task_firebase_controller.dart';
 import 'package:crud_sqlite_provider/model/task_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,7 +17,8 @@ class _InputPageState extends State<InputPage> {
   final TextEditingController _descriptionController = TextEditingController();
   DateTime? _dueDate;
 
-  final TaskController taskController = Get.find<TaskController>();
+  final TaskRealtimeController taskController =
+      Get.find<TaskRealtimeController>();
 
   @override
   void initState() {
@@ -50,11 +52,12 @@ class _InputPageState extends State<InputPage> {
     }
 
     final task = TaskModel(
-      id: widget.task?.id ?? 0,
+      id: widget.task?.id ?? '',
       title: _titleController.text,
+      userId: FirebaseAuth.instance.currentUser?.uid ?? '',
       description: _descriptionController.text,
       dateTime: _dueDate ?? DateTime.now(),
-      createTime: DateTime.now(),
+      createdAt: DateTime.now().millisecondsSinceEpoch,
     );
 
     if (widget.task == null) {

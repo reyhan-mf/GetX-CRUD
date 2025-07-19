@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "920149916714",
+    "project_id": "crud-95524",
+    "storage_bucket": "crud-95524.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:920149916714:android:6c2d6efaf97932695ed753",
+        "android_client_info": {
+          "package_name": "com.example.crud_sqlite_provider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "920149916714-prdalhr8t3nmnkjhpv0r9g2ev9hkc8ui.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.crud_sqlite_provider",
+            "certificate_hash": "4103399355fe15875cfa661f0e78b5f193f7aa33"
+          }
+        },
+        {
+          "client_id": "920149916714-g7eh9jshr0g35s78sj9qp6jvs5ocbecj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0uMC2FtYOvo2AbMJHlzTkxi019YvZxz8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "920149916714-g7eh9jshr0g35s78sj9qp6jvs5ocbecj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "920149916714-40dv4fqbsjqvqsajmh5nvpkdql7u0b9j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.crudSqliteProvider"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

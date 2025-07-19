@@ -1,13 +1,18 @@
-import 'package:crud_sqlite_provider/controller/task_controller.dart';
+import 'package:crud_sqlite_provider/LoginScreen.dart';
+// import 'package:crud_sqlite_provider/controller/task_controller.dart';
+import 'package:crud_sqlite_provider/controller/task_firebase_controller.dart';
 import 'package:crud_sqlite_provider/inputPage.dart';
 import 'package:crud_sqlite_provider/model/task_model.dart';
+import 'package:crud_sqlite_provider/service/firebase_db.dart';
+import 'package:crud_sqlite_provider/service/google_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
-
-  final TaskController taskController = Get.put(TaskController());
+  final TaskRealtimeController taskController = Get.put(TaskRealtimeController()); // Ubah ini
+  final user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +27,34 @@ class HomePage extends StatelessWidget {
             },
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text(user?.displayName ?? 'User'),
+              accountEmail: Text(user?.email ?? 'No email'),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Text(
+                  user?.displayName?.substring(0, 1) ?? 'U',
+                  style: TextStyle(fontSize: 24.0),
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Logout'),
+              onTap: () async {
+                final result = await Get.find<FirebaseService>().signOut();
+                if (result == true) {
+                  Get.offAll(LoginPage());
+                }
+              },
+            ),
+          ],
+        ),
       ),
       body: Obx(() {
         if (taskController.isLoading.value) {
@@ -48,6 +81,8 @@ class HomePage extends StatelessWidget {
             ),
           );
         }
+
+      
 
         return ListView.builder(
           itemCount: taskController.tasks.length,
@@ -131,7 +166,7 @@ class DataCard extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () => _showDeleteDialog(
-                        context, Get.find<TaskController>(), task),
+                        context, Get.find<TaskRealtimeController>(), task),
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
                       padding: EdgeInsets.all(4),
@@ -160,7 +195,7 @@ class DataCard extends StatelessWidget {
   }
 
   void _showDeleteDialog(
-      BuildContext context, TaskController controller, TaskModel task) {
+      BuildContext context, TaskRealtimeController controller, TaskModel task) {
     Get.dialog(
       AlertDialog(
         title: Text('Delete Task'),
@@ -172,7 +207,12 @@ class DataCard extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              controller.deleteTask(task.id);
+              if (task.id != null) {
+                controller.deleteTask(task.id!);
+              } else {
+                // Handle the case where task.id is null, e.g., show an error message
+                Get.snackbar('Error', 'Task ID is null');
+              }
               Get.back();
             },
             child: Text('Delete', style: TextStyle(color: Colors.red)),
