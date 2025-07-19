@@ -28,8 +28,8 @@ class RealtimeDatabaseService extends GetxController {
   // Database reference untuk tasks
   DatabaseReference get tasksRef {
     final userId = currentUserId.value ?? _auth.currentUser?.uid ?? '';
-    print('Getting tasksRef for user: $userId');
-    return _database.ref().child('tasks').child(userId);
+    print('Getting tasksRef for user: $userId'); // Output: "hv2AwaIH0jUO49cDlWlWgex2Bzo1"
+    return _database.ref().child('tasks').child(userId); // ✅ Path: tasks/hv2AwaIH0jUO49cDlWlWgex2Bzo1/
   }
 
   // CREATE - Tambah task baru

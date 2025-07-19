@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:crud_sqlite_provider/model/task_model.dart';
 import 'package:crud_sqlite_provider/service/firebase_db.dart';
 import 'package:firebase_database/firebase_database.dart';

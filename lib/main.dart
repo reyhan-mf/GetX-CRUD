@@ -1,12 +1,11 @@
-import 'package:crud_sqlite_provider/LoginScreen.dart';
 import 'package:crud_sqlite_provider/controller/user_controller.dart';
-import 'package:crud_sqlite_provider/home.dart';
 import 'package:crud_sqlite_provider/service/firebase_db.dart';
 import 'package:crud_sqlite_provider/service/google_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:crud_sqlite_provider/stopwatch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
 
 import 'firebase_options.dart';
@@ -18,6 +17,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Initialize foreground task
+  FlutterForegroundTask.initCommunicationPort();
 
   FirebaseDatabase.instance.setPersistenceEnabled(true);
 
@@ -33,9 +35,11 @@ void main() async {
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       useMaterial3: true,
     ),
-    home: FirebaseAuth.instance.currentUser == null
-        ? LoginPage() // Show login page if user is not authenticated
-        : HomePage(), // Show home page if user is authenticated
+    home:
+        StopWatch(), // Ganti dengan HomePage() jika ingin langsung ke halaman utama
+    // home: FirebaseAuth.instance.currentUser == null
+    //     ? LoginPage() // Show login page if user is not authenticated
+    //     : HomePage(), // Show home page if user is authenticated
   ));
 }
 
