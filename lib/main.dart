@@ -1,5 +1,4 @@
 import 'package:crud_sqlite_provider/LoginScreen.dart';
-import 'package:crud_sqlite_provider/controller/task_firebase_controller.dart';
 import 'package:crud_sqlite_provider/controller/user_controller.dart';
 import 'package:crud_sqlite_provider/home.dart';
 import 'package:crud_sqlite_provider/service/firebase_db.dart';
@@ -22,12 +21,12 @@ void main() async {
 
   FirebaseDatabase.instance.setPersistenceEnabled(true);
 
-
   Get.put(FirebaseService());
   Get.put(RealtimeDatabaseService()); // Tambahkan ini
-  Get.put(TaskRealtimeController()); // Register TaskRealtimeController
-  Get.put(UserController(Get.find<FirebaseService>()));// Register UserController with GetX
-  
+  // TaskRealtimeController akan diinisialisasi di HomePage untuk memastikan dependency injection yang benar
+  Get.put(UserController(
+      Get.find<FirebaseService>())); // Register UserController with GetX
+
   runApp(GetMaterialApp(
     title: 'Flutter Demo',
     theme: ThemeData(

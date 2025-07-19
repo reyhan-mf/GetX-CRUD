@@ -6,21 +6,40 @@ class RealtimeDatabaseService extends GetxController {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Get current user ID
-  String? get currentUserId => _auth.currentUser?.uid;
+  // Observable current user ID
+  var currentUserId = Rxn<String>();
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Listen to auth state changes
+    _auth.authStateChanges().listen((User? user) {
+      currentUserId.value = user?.uid;
+      print('Auth state changed - User ID: ${currentUserId.value}');
+    });
+  }
+
+  // Method untuk reset state ketika logout
+  void resetState() {
+    currentUserId.value = null;
+    print('RealtimeDatabaseService state reset');
+  }
 
   // Database reference untuk tasks
-  DatabaseReference get tasksRef => 
-      _database.ref().child('tasks').child(currentUserId ?? '');
+  DatabaseReference get tasksRef {
+    final userId = currentUserId.value ?? _auth.currentUser?.uid ?? '';
+    print('Getting tasksRef for user: $userId');
+    return _database.ref().child('tasks').child(userId);
+  }
 
   // CREATE - Tambah task baru
   Future<String?> addTask(Map<String, dynamic> taskData) async {
     try {
-      if (currentUserId == null) return null;
-      
-      taskData['userId'] = currentUserId;
+      if (currentUserId.value == null) return null;
+
+      taskData['userId'] = currentUserId.value;
       taskData['createdAt'] = ServerValue.timestamp;
-      
+
       DatabaseReference newTaskRef = tasksRef.push();
       await newTaskRef.set(taskData);
       return newTaskRef.key;
@@ -32,7 +51,7 @@ class RealtimeDatabaseService extends GetxController {
 
   // READ - Get semua tasks (Stream untuk real-time updates)
   Stream<DatabaseEvent> getTasks() {
-    if (currentUserId == null) {
+    if (currentUserId.value == null) {
       return const Stream.empty();
     }
     return tasksRef.orderByChild('createdAt').onValue;
@@ -41,7 +60,7 @@ class RealtimeDatabaseService extends GetxController {
   // READ - Get task by ID
   Future<DataSnapshot?> getTaskById(String taskId) async {
     try {
-      if (currentUserId == null) return null;
+      if (currentUserId.value == null) return null;
       DataSnapshot snapshot = await tasksRef.child(taskId).get();
       return snapshot;
     } catch (e) {
@@ -53,8 +72,8 @@ class RealtimeDatabaseService extends GetxController {
   // UPDATE - Update task
   Future<bool> updateTask(String taskId, Map<String, dynamic> taskData) async {
     try {
-      if (currentUserId == null) return false;
-      
+      if (currentUserId.value == null) return false;
+
       taskData['updatedAt'] = ServerValue.timestamp;
       await tasksRef.child(taskId).update(taskData);
       return true;
@@ -67,7 +86,7 @@ class RealtimeDatabaseService extends GetxController {
   // DELETE - Hapus task
   Future<bool> deleteTask(String taskId) async {
     try {
-      if (currentUserId == null) return false;
+      if (currentUserId.value == null) return false;
       await tasksRef.child(taskId).remove();
       return true;
     } catch (e) {
@@ -79,7 +98,7 @@ class RealtimeDatabaseService extends GetxController {
   // DELETE - Hapus semua tasks
   Future<bool> deleteAllTasks() async {
     try {
-      if (currentUserId == null) return false;
+      if (currentUserId.value == null) return false;
       await tasksRef.remove();
       return true;
     } catch (e) {
@@ -91,14 +110,14 @@ class RealtimeDatabaseService extends GetxController {
   // Batch update (untuk multiple tasks)
   Future<bool> batchUpdate(Map<String, Map<String, dynamic>> updates) async {
     try {
-      if (currentUserId == null) return false;
-      
+      if (currentUserId.value == null) return false;
+
       Map<String, dynamic> updateMap = {};
       updates.forEach((taskId, taskData) {
         taskData['updatedAt'] = ServerValue.timestamp;
-        updateMap['tasks/$currentUserId/$taskId'] = taskData;
+        updateMap['tasks/${currentUserId.value}/$taskId'] = taskData;
       });
-      
+
       await _database.ref().update(updateMap);
       return true;
     } catch (e) {

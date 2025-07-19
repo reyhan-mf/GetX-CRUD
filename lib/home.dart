@@ -11,7 +11,8 @@ import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
-  final TaskRealtimeController taskController = Get.put(TaskRealtimeController()); // Ubah ini
+  final TaskRealtimeController taskController =
+      Get.put(TaskRealtimeController()); // Inisialisasi di sini
   final user = FirebaseAuth.instance.currentUser;
 
   @override
@@ -47,6 +48,15 @@ class HomePage extends StatelessWidget {
               leading: Icon(Icons.logout),
               title: Text('Logout'),
               onTap: () async {
+                // Reset RealtimeDatabaseService state
+                final dbService = Get.find<RealtimeDatabaseService>();
+                dbService.resetState();
+
+                // Reset TaskController
+                if (Get.isRegistered<TaskRealtimeController>()) {
+                  Get.delete<TaskRealtimeController>();
+                }
+
                 final result = await Get.find<FirebaseService>().signOut();
                 if (result == true) {
                   Get.offAll(LoginPage());
@@ -81,8 +91,6 @@ class HomePage extends StatelessWidget {
             ),
           );
         }
-
-      
 
         return ListView.builder(
           itemCount: taskController.tasks.length,
